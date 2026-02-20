@@ -53,10 +53,24 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 async function handleAnalysis(data, type, sendResponse) {
   try {
     const stored = await chrome.storage.local.get(['geminiApiKey', 'openaiApiKey', 'claudeApiKey', 'aiProvider']);
-    const mode = stored.aiProvider || 'triple';
-    const geminiKey = stored.geminiApiKey;
-    const openaiKey = stored.openaiApiKey;
-    const claudeKey = stored.claudeApiKey;
+    let mode = stored.aiProvider || 'triple';
+    let geminiKey = stored.geminiApiKey;
+    let openaiKey = stored.openaiApiKey;
+    let claudeKey = stored.claudeApiKey;
+
+    // ── FALLBACK: Load from env.js if keys are missing in storage ──
+    if (!geminiKey || !openaiKey || !claudeKey) {
+      try {
+        const module = await import('./env.js');
+        const env = module.default || {};
+        if (!geminiKey && env.GEMINI_API_KEY) geminiKey = env.GEMINI_API_KEY;
+        if (!openaiKey && env.OPENAI_API_KEY) openaiKey = env.OPENAI_API_KEY;
+        if (!claudeKey && env.CLAUDE_API_KEY) claudeKey = env.CLAUDE_API_KEY;
+        console.log('Background: Loaded missing keys from env.js fallback.');
+      } catch (e) {
+        // env.js might not exist, which is fine.
+      }
+    }
 
     const prompt = type === 'profile' ? buildProfilePrompt(data) : buildKeywordPrompt(data);
 
