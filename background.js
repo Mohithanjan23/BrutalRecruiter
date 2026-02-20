@@ -9,34 +9,30 @@ const CLAUDE_BASE = 'https://api.anthropic.com/v1/messages';
 const CLAUDE_MODEL = 'claude-3-5-sonnet-20241022';
 
 // ── Default Key Bootstrap ─────────────────────────────────
-chrome.runtime.onInstalled.addListener(() => {
-  chrome.storage.local.get(['geminiApiKey', 'openaiApiKey', 'claudeApiKey'], (result) => {
+// ── Default Key Bootstrap from env.js (if present) ────────────────
+chrome.runtime.onInstalled.addListener(async () => {
+  console.log('Extension installed/updated.');
+
+  try {
+    // Attempt to load local environment variables
+    const module = await import('./env.js');
+    const env = module.default || {};
+
+    // Check for keys to update
     const updates = {};
+    if (env.GEMINI_API_KEY) updates.geminiApiKey = env.GEMINI_API_KEY;
+    if (env.OPENAI_API_KEY) updates.openaiApiKey = env.OPENAI_API_KEY;
+    if (env.CLAUDE_API_KEY) updates.claudeApiKey = env.CLAUDE_API_KEY;
 
-    if (!result.geminiApiKey) {
-      const p = ['AIzaSyBy', 'rtaQACMa', 'E0xLtvfB', '4ni2sV54', 'AmRq4JY'];
-      updates.geminiApiKey = p.join('');
+    if (Object.keys(updates).length > 0) {
+      chrome.storage.local.set(updates, () => {
+        console.log('Environment keys loaded from env.js');
+      });
     }
-    if (!result.openaiApiKey) {
-      const p = [
-        'sk-proj-hcJ5s', 'E_-ft3oIl0NiJV', 'Zvq_0dtpKXRJQV',
-        '6pAShVblqx7BX5', 'oIsFXcqBbjl-74', 'y8luMvY4u61vOT',
-        '3BlbkFJ9jDcg__', 'bXesLSCuLXeVGD', 'ctgUBrWMFnoCq2',
-        'FLg5tsFBLaOl42', 'PmJczSRoNThi6G', 'LTNmbpW3ncA'
-      ];
-      updates.openaiApiKey = p.join('');
-    }
-    if (!result.claudeApiKey) {
-      const p = [
-        'sk-ant-api03-', 'yjkerJ4E-3JQS', 'CLq8TQNvyTteu',
-        'ZUwoO_j3PaFCd', 'wJRZsQ3_3ywLv', 'uXAppDGdpUd7g',
-        'qxqAKXj4E3hyc', 'Vx4ufF1Q-onDl', 'KgAA'
-      ];
-      updates.claudeApiKey = p.join('');
-    }
-
-    if (Object.keys(updates).length > 0) chrome.storage.local.set(updates);
-  });
+  } catch (e) {
+    // env.js likely doesn't exist, which is fine for normal users
+    console.log('No local env.js found, skipping key bootstrap.');
+  }
 });
 
 // ── Message Router ─────────────────────────────────────────
@@ -231,8 +227,9 @@ function buildProfilePrompt(d) {
     : 'Unknown';
 
   return `
-You are a brutally honest executive recruiter, LinkedIn SEO expert, and career strategist.
-Analyse this LinkedIn profile and produce a comprehensive structured JSON report.
+You are an expert Executive Recruiter and LinkedIn Strategist.
+Analyse this LinkedIn profile and produce a comprehensive, professional structured JSON report.
+Focus on actionable, high-impact improvements for career advancement. Avoid fluff. Be objective and data-driven.
 
 CONTEXT:
   Detected Industry: ${d.industry || 'Unknown'}
@@ -257,62 +254,61 @@ PROFILE DATA:
 
 SCORING RULES:
 
-Overall Brutality Score (0-100, start at 0):
-  +10  About section present and well-written
+Overall Impact Score (0-100, objective quality assessment):
+  +10  About section clear, structured, and includes keywords
   +10  Recent activity detected
-  +20  Experience section with detailed entries
-  +10  Education section present
+  +25  Experience section rich with metrics, results, and relevant keywords
+  +10  Education section relevant and complete
   +10  Certifications present
   +5   Volunteering present
-  +10  Skills section populated
-  +25  Content quality — metrics, impact, clarity (proportional)
+  +10  Skills section well-populated and relevant
+  +20  Overall clarity, professional branding, and "hireability"
   -10  No profile picture
-  -10  Generic or missing headline
-  -5   Under 500 connections
-  -15  Task-based bullets ("Responsible for") instead of result-based
-  -20  No numbers, percentages, or dollar figures in experience
-  -5 per buzzword (max -20): "passionate", "motivated", "ninja", "guru", "strategic"
+  -10  Headline is generic (e.g., student, unemployed)
+  -5   Under 500 connections (limit networking reach)
+  -15  Experience lacks metrics/results (duty-focused vs outcome-focused)
+  -20  Missing critical sections (About, Experience)
 
 Section Scores (each 0-10):
-  headline: keyword richness, value proposition clarity, Taplio formula adherence
-  about: story coherence, call-to-action, "mini sales pitch" quality
-  experience: achievement vs duty ratio, quantified impact, relevance
-  skills: alignment with headline/experience, industry relevance
-  recommendations: 0 recs=0, 1-2=4, 3-5=7, 6+=10
-  featured: missing=0-3, has good content=7-10
-  url: auto-generated=0-3, clean vanity=8-10
+  headline: clarity, SEO value, value proposition
+  about: narrative structure, readability, call-to-action
+  experience: quantifiable impact, progression, relevance
+  skills: alignment with role, endorsements
+  recommendations: social proof quality and quantity
+  featured: quality of pinned content
+  url: professional URL formatting
 
 Completeness Score (0-100): Profile photo(+15), Headline(+10), About(+15), Experience(+20), Education(+10), Skills(+10), Featured(+10), Banner(+5), Recommendations(+5)
 
-Algorithm Score (0-100): LinkedIn SEO — keyword density in headline+about+experience, industry-relevant terms, searchability for recruiters in this field.
+Algorithm Score (0-100): LinkedIn SEO strength — keyword strategy, discoverability, relevance to declared industry.
 
-Industry Benchmark: Compare this profile to top ${d.industry || 'professional'} profiles. State specifically what top performers have that this profile lacks.
+Industry Benchmark: Compare this profile to top-performing professionals in the ${d.industry || 'same'} industry. What specific elements do they have that this profile is missing?
 
 TAPLIO HEADLINE FORMULA: Generate one headline using EXACTLY this pipe-separated format:
 [Current Role] | [Top 2-3 Skills] | [Key Differentiator] | [Quantified Achievement] | [Goal/Passion]
 Max 220 characters.
 
 FIX SUGGESTIONS: Each item MUST include:
-  "what" — the specific change
-  "why"  — why it matters for recruiters/algorithm
-  "how"  — exact step-by-step instructions
+  "what" — the specific recommendation
+  "why"  — the strategic benefit (recruiter psychology or algorithm benefit)
+  "how"  — precise implementation steps
 
 OUTPUT RULES:
 - ONLY valid JSON. No markdown, no explanation, no code fences.
-- All string values must be complete sentences without line breaks.
-- The "original" field in impactStatements must be a real quote from the experience data above.
-- urlFix must be null (JSON null) if URL is already a clean vanity URL.
+- All string values must be professional and grammatically correct.
+- The "original" field in impactStatements must be a real excerpt from the experience data.
+- urlFix must be null (JSON null) if URL is already optimized.
 
 JSON STRUCTURE:
 {
   "roast": {
-    "brutalityScore": <integer 0-100>,
+    "brutalityScore": <integer 0-100>,  // Using "brutalityScore" key for compatibility, but represents "Impact Score"
     "algorithmScore": <integer 0-100>,
     "completenessScore": <integer 0-100>,
     "recruiterView": "<2-sentence first impression from a recruiter scanning for 7 seconds>",
-    "industryBenchmark": "<2-3 sentences comparing to top performers in the detected industry>",
-    "redFlags": ["<specific deduction reason>"],
-    "summary": "<2-3 sentence brutal verdict>"
+    "industryBenchmark": "<2-3 sentences comparing to top performers in the sector>",
+    "redFlags": ["<specific critical missing element or weakness>"],
+    "summary": "<2-3 sentence executive summary of the profile strength>"
   },
   "sectionScores": {
     "headline": <0-10>,
@@ -326,28 +322,28 @@ JSON STRUCTURE:
   "suggestions": {
     "headlines": [
       { "type": "Taplio Formula", "text": "<Role | Skills | Differentiator | Achievement | Goal>" },
-      { "type": "SEO-Optimized", "text": "<keyword-rich headline under 220 chars>" },
-      { "type": "Executive", "text": "<authority-focused headline under 220 chars>" }
+      { "type": "SEO-Optimized", "text": "<keyword-rich headline>" },
+      { "type": "Executive Presence", "text": "<authority-focused headline>" }
     ],
     "urlFix": null,
     "impactStatements": [
-      { "original": "<weak line from profile>", "improved": "<rewritten with metrics>", "why": "<benefit>", "how": "<exact steps>" }
+      { "original": "<weak line from profile>", "improved": "<rewrite with metrics/impact>", "why": "<benefit>", "how": "<implementation>" }
     ],
     "actionPlan": [
-      { "step": "<action>", "why": "<benefit>", "how": "<exact instructions>" },
-      { "step": "<action>", "why": "<benefit>", "how": "<exact instructions>" },
-      { "step": "<action>", "why": "<benefit>", "how": "<exact instructions>" },
-      { "step": "<action>", "why": "<benefit>", "how": "<exact instructions>" }
+      { "step": "<action>", "why": "<benefit>", "how": "<instruction>" },
+      { "step": "<action>", "why": "<benefit>", "how": "<instruction>" },
+      { "step": "<action>", "why": "<benefit>", "how": "<instruction>" },
+      { "step": "<action>", "why": "<benefit>", "how": "<instruction>" }
     ],
     "growthHacks": {
       "viralHooks": [
-        "<Post opening line — story-based>",
-        "<Post opening line — data-driven>",
-        "<Post opening line — controversial/contrarian>"
+        "<Strategic content hook 1>",
+        "<Strategic content hook 2>",
+        "<Strategic content hook 3>"
       ],
       "networkingScripts": [
-        { "target": "Recruiter", "script": "<Short DM, under 3 sentences>" },
-        { "target": "Peer or Founder", "script": "<Value-first connection message>" }
+        { "target": "Recruiter", "script": "<Professional outreach script>" },
+        { "target": "Peer/Founder", "script": "<Networking value-add script>" }
       ]
     }
   }

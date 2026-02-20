@@ -1,12 +1,12 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/Mohithanjan23/BrutalRecruiter/main/images/icon128.png" alt="BrutalRecruiter Logo" width="96" />
+<img src="https://raw.githubusercontent.com/Mohithanjan23/BrutalRecruiter/main/images/icon128.png" alt="Profile Analyzer Logo" width="96" />
 
-# BrutalRecruiter
+# Profile Analyzer (formerly BrutalRecruiter)
 
-**AI-powered LinkedIn profile reviewer. Three models. One verdict. Zero fluff.**
+**AI-powered LinkedIn profile strategist. Three models. One executive verdict.**
 
-[![Version](https://img.shields.io/badge/version-1.3-black?style=for-the-badge)](https://github.com/Mohithanjan23/BrutalRecruiter)
+[![Version](https://img.shields.io/badge/version-2.0-blue?style=for-the-badge)](https://github.com/Mohithanjan23/BrutalRecruiter)
 [![Chrome MV3](https://img.shields.io/badge/Chrome-Manifest_V3-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white)](https://developer.chrome.com/docs/extensions/mv3)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES2022-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![License](https://img.shields.io/badge/license-MIT-22c55e?style=for-the-badge)](LICENSE)
@@ -25,7 +25,12 @@
 
 ## What It Does
 
-BrutalRecruiter installs as a Chrome extension, injects a sidebar into LinkedIn, and calls all three AI providers simultaneously when you click **Scan Me**. Results from Gemini, GPT-4o, and Claude 3.5 are merged into a single consensus report: averaged scores, deduplicated red flags, and the best suggestions from each model combined.
+**Profile Analyzer** installs as a Chrome extension, injects a professional analysis sidebar into LinkedIn, and calls all three major AI providers simultaneously when you click **Analyze Profile**.
+
+Results from **Gemini**, **GPT-4o**, and **Claude 3.5** are merged into a single consensus report:
+- **Impact Score**: A weighted average of your profile's strength.
+- **Executive Summary**: A strategic overview of your positioning.
+- **Actionable Steps**: Specific "Why" and "How" improvements for every section.
 
 ---
 
@@ -44,10 +49,10 @@ Gemini    GPT-4o    Claude 3.5
     \        |         /
             v
        mergeResults()
-       - Scores: averaged
-       - Red flags: union + deduplicated
-       - Headlines: up to 9 variants (3 per model)
-       - Action plan: 3 best steps per model
+       - Scores: averaged (Impact, Algorithmic, Completeness)
+       - Strategic advice: best-of-breed selection
+       - Headlines: highly optimized options
+       - Action plan: prioritized roadmap
             |
             v
     content.js renders sidebar
@@ -61,18 +66,15 @@ If any provider fails or rate-limits, the others continue. A "Powered by" badge 
 
 | Feature | Description |
 |---|---|
-| Single-click scan | Click Scan Me — no configuration required |
-| Section scores | Every section scored 0–10 with status (Good / Needs Work / Critical) |
-| Fix cards | Per-section Why + How improvement instructions |
-| Three overall scores | Profile score, Algorithm score, Completeness % |
-| Recruiter view | How a recruiter reads your profile in 7 seconds |
-| Industry benchmark | Compared to top performers in your detected industry |
-| Job Fit (1–5) | Paste a JD, get a star rating, keyword gap analysis, and fix steps |
-| Taplio headline | Pipe-separated formula headline generated per profile |
-| Bullet rewrites | Before / after rewrites with quantified impact |
-| DM scripts | Ready-to-use networking messages |
-| Post hooks | Click-to-copy viral LinkedIn content openers |
-| Progress history | Score tracked across multiple scans |
+| **Deep Analysis** | Single-click full profile audit |
+| **Impact Score** | 0–100 score based on objective keywords, metrics, and clarity |
+| **Section Audits** | Detailed breakdown of Headline, About, Experience, Skills, etc. |
+| **Fix Suggestions** | Context-aware improvements with strategic reasoning |
+| **Market Comparison** | Benchmarks your profile against top performers in your industry |
+| **Job Fit Check** | Paste a JD to get a 1–5 fit score and keyword gap analysis |
+| **Smart Headlines** | Generates SEO-optimized and authority-building headlines |
+| **Impact Rewrites** | Rewrites your experience bullets to focus on results/metrics |
+| **Outreach Scripts** | Professional connection request benchmarks |
 
 ---
 
@@ -93,17 +95,25 @@ git clone https://github.com/Mohithanjan23/BrutalRecruiter.git
 
 **Step 3 — Add API keys**
 
-Click the extension icon → Settings. Add keys for any or all providers:
+Click the extension icon → Settings. Add keys for at least one provider (Gemini is free-tier friendly):
 
 [![Gemini](https://img.shields.io/badge/Get_Gemini_Key-Google_AI_Studio-4285F4?style=flat-square&logo=google&logoColor=white)](https://aistudio.google.com/)
 [![OpenAI](https://img.shields.io/badge/Get_OpenAI_Key-platform.openai.com-412991?style=flat-square&logo=openai&logoColor=white)](https://platform.openai.com/api-keys)
 [![Anthropic](https://img.shields.io/badge/Get_Claude_Key-console.anthropic.com-CC785C?style=flat-square&logo=anthropic&logoColor=white)](https://console.anthropic.com/settings/keys)
 
-> Keys are stored in `chrome.storage.local` and never sent anywhere except the respective provider's API during a scan.
+> **Security Note:** Keys are stored in `chrome.storage.local` sandbox. They are never sent to any middleware server—only directly to the respective AI APIs from your browser.
 
-**Step 4 — Scan**
+**Option B — Use `env.js` (Developer Mode)**
 
-Go to any `linkedin.com/in/...` profile and click **Scan Me**.
+If you prefer configuration over clicking:
+1. Rename `env.example.js` to `env.js`.
+2. Paste your keys inside `env.js`.
+3. Reload the extension.
+4. Note: `env.js` is gitignored by default for security.
+
+**Step 4 — Analyze**
+
+Navigate to any `linkedin.com/in/...` profile (yours or others) and click **Analyze Profile**.
 
 ---
 
@@ -111,92 +121,33 @@ Go to any `linkedin.com/in/...` profile and click **Scan Me**.
 
 ```
 BrutalRecruiter/
-|-- manifest.json       Extension manifest (MV3), permissions, host rules
-|-- background.js       Service worker — API calls, triple-AI merge logic
-|-- content.js          Scraper + sidebar renderer injected into LinkedIn
-|-- styles.css          All sidebar component styles
-|-- popup.html          Popup UI — provider toggle, API key settings
-|-- popup.js            Popup logic — storage, provider switching, scan trigger
-|-- images/             Extension icons (16 / 48 / 128 px)
+|-- manifest.json       Extension manifest (MV3)
+|-- background.js       Service worker — API calls, consensus logic
+|-- content.js          Scraper + Sidebar UI renderer
+|-- styles.css          Professional theme styles
+|-- popup.html          Settings & Key Management
+|-- popup.js            Popup logic
+|-- images/             Icons
 ```
 
-### Core Functions
+### Scoring Reference
 
-| Function | File | Purpose |
-|---|---|---|
-| `handleAnalysis()` | background.js | Routes to triple or single provider |
-| `mergeResults()` | background.js | Merges multi-model output into one report |
-| `callGeminiAPI()` | background.js | Gemini with model fallback chain |
-| `callOpenAIAPI()` | background.js | GPT-4o with JSON mode |
-| `callClaudeAPI()` | background.js | Claude with markdown fence stripping |
-| `buildProfilePrompt()` | background.js | Full scoring rubric prompt |
-| `buildKeywordPrompt()` | background.js | Job fit prompt (1–5 score output) |
-| `scrapeProfile()` | content.js | Extracts all visible profile data from the DOM |
-| `mergeResults()` | background.js | Consensus engine across providers |
+**Impact Score (0–100)** determines the overall strength:
+- **0-39:** Critical Gaps
+- **40-69:** Needs Improvement
+- **70-100:** Strong / Executive Level
 
----
-
-## Scoring Reference
-
-### Profile Score — 0 to 100
-
-| Factor | Points |
-|---|---|
-| About section present and well-written | +10 |
-| Recent activity detected | +10 |
-| Experience with detailed entries | +20 |
-| Education present | +10 |
-| Certifications present | +10 |
-| Skills section populated | +10 |
-| Content quality — metrics, impact, clarity | up to +25 |
-| No profile picture | -10 |
-| Generic or missing headline | -10 |
-| No numbers or percentages in experience | -20 |
-| Buzzwords (passionate, ninja, guru...) | -5 each |
-
-### Job Fit Score — 1 to 5
-
-| Score | Label | Keyword Match |
-|---|---|---|
-| 5 | Excellent | 80% and above |
-| 4 | Good | 60–79% |
-| 3 | Average | 40–59% |
-| 2 | Weak | 20–39% |
-| 1 | Poor | Under 20% |
-
----
-
-## Rate Limit Handling
-
-| Attempt | Delay before retry |
-|---|---|
-| 1 | 5 seconds |
-| 2 | 15 seconds |
-| 3 (final) | 30 seconds, then error |
-
-In Triple mode, a failed provider is skipped and the remaining models' results are merged.
-
----
-
-## Tech Stack
-
-[![Chrome Extension](https://img.shields.io/badge/Chrome_Extension-Manifest_V3-4285F4?style=flat-square&logo=googlechrome&logoColor=white)](https://developer.chrome.com/docs/extensions/)
-[![Service Worker](https://img.shields.io/badge/Background-Service_Worker-black?style=flat-square&logo=javascript&logoColor=white)](https://developer.chrome.com/docs/workbox/service-worker-overview/)
-[![Vanilla JS](https://img.shields.io/badge/UI-Vanilla_JS_%2B_CSS-F7DF1E?style=flat-square&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Gemini API](https://img.shields.io/badge/AI-Gemini_API-4285F4?style=flat-square&logo=google&logoColor=white)](https://ai.google.dev/)
-[![OpenAI API](https://img.shields.io/badge/AI-OpenAI_API-412991?style=flat-square&logo=openai&logoColor=white)](https://platform.openai.com/)
-[![Anthropic API](https://img.shields.io/badge/AI-Anthropic_API-CC785C?style=flat-square&logo=anthropic&logoColor=white)](https://anthropic.com/)
-[![Local Storage](https://img.shields.io/badge/Storage-chrome.storage.local-34a853?style=flat-square&logo=google&logoColor=white)](https://developer.chrome.com/docs/extensions/reference/storage/)
-
-No build tools. No bundlers. No dependencies. Pure browser APIs.
+**Job Fit Score (1–5)**:
+- **5:** Excellent Match (>80% keywords)
+- **1:** Poor Fit (<20% keywords)
 
 ---
 
 ## Privacy
 
-- Profile data is read locally in your browser and sent directly to the AI provider during a scan only.
-- API keys are stored in `chrome.storage.local` — isolated per Chrome profile, never synced or sent to any third-party server.
-- No telemetry. No analytics. No backend.
+- **Local Processing:** Profile data is scraped locally.
+- **Direct API Calls:** Data is sent only to the AI providers you configure (Google, OpenAI, Anthropic).
+- **No Tracking:** No analytics, no tracking pixels, no 3rd party servers.
 
 ---
 

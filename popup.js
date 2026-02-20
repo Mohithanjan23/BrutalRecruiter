@@ -12,9 +12,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ── Load saved settings ──────────────────────────────────
     chrome.storage.local.get(['geminiApiKey', 'openaiApiKey', 'claudeApiKey', 'aiProvider'], (result) => {
-        if (result.geminiApiKey) geminiKeyInput.value = result.geminiApiKey;
-        if (result.openaiApiKey) openaiKeyInput.value = result.openaiApiKey;
-        if (result.claudeApiKey) claudeKeyInput.value = result.claudeApiKey;
+        if (result.geminiApiKey) {
+            geminiKeyInput.placeholder = '•••••••• (Configured)';
+            geminiKeyInput.dataset.configured = 'true';
+        }
+        if (result.openaiApiKey) {
+            openaiKeyInput.placeholder = '•••••••• (Configured)';
+            openaiKeyInput.dataset.configured = 'true';
+        }
+        if (result.claudeApiKey) {
+            claudeKeyInput.placeholder = '•••••••• (Configured)';
+            claudeKeyInput.dataset.configured = 'true';
+        }
         setProvider(result.aiProvider || 'triple', false);
     });
 
@@ -47,27 +56,37 @@ document.addEventListener('DOMContentLoaded', () => {
         const openaiVal = openaiKeyInput.value.trim();
         const claudeVal = claudeKeyInput.value.trim();
 
+        // Only update if user typed something new
         if (geminiVal) updates.geminiApiKey = geminiVal;
         if (openaiVal) updates.openaiApiKey = openaiVal;
         if (claudeVal) updates.claudeApiKey = claudeVal;
 
+        // Check verification (either have new input OR already configured)
+        const hasGemini = geminiVal || geminiKeyInput.dataset.configured === 'true';
+        const hasOpenai = openaiVal || openaiKeyInput.dataset.configured === 'true';
+        const hasClaude = claudeVal || claudeKeyInput.dataset.configured === 'true';
+
         // Triple mode: need at least one key
-        if (currentProvider === 'triple' && !geminiVal && !openaiVal && !claudeVal) {
+        if (currentProvider === 'triple' && !hasGemini && !hasOpenai && !hasClaude) {
             setStatus(saveStatusEl, 'Enter at least one API key.', 'error'); return;
         }
-        if (currentProvider === 'gemini' && !geminiVal) {
+        if (currentProvider === 'gemini' && !hasGemini) {
             setStatus(saveStatusEl, 'Enter a Gemini API key.', 'error'); return;
         }
-        if (currentProvider === 'openai' && !openaiVal) {
+        if (currentProvider === 'openai' && !hasOpenai) {
             setStatus(saveStatusEl, 'Enter an OpenAI API key.', 'error'); return;
         }
-        if (currentProvider === 'claude' && !claudeVal) {
+        if (currentProvider === 'claude' && !hasClaude) {
             setStatus(saveStatusEl, 'Enter an Anthropic API key.', 'error'); return;
         }
 
         chrome.storage.local.set(updates, () => {
-            const savedCount = [geminiVal, openaiVal, claudeVal].filter(Boolean).length;
-            setStatus(saveStatusEl, `${savedCount} key${savedCount !== 1 ? 's' : ''} saved ✓`, 'success');
+            // Update UI/Dataset to reflect saved state
+            if (geminiVal) { geminiKeyInput.value = ''; geminiKeyInput.placeholder = '•••••••• (Saved)'; geminiKeyInput.dataset.configured = 'true'; }
+            if (openaiVal) { openaiKeyInput.value = ''; openaiKeyInput.placeholder = '•••••••• (Saved)'; openaiKeyInput.dataset.configured = 'true'; }
+            if (claudeVal) { claudeKeyInput.value = ''; claudeKeyInput.placeholder = '•••••••• (Saved)'; claudeKeyInput.dataset.configured = 'true'; }
+
+            setStatus(saveStatusEl, `Settings saved ✓`, 'success');
             setTimeout(() => setStatus(saveStatusEl, '', ''), 3000);
         });
     });

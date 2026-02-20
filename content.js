@@ -22,7 +22,7 @@
     if (!bar) return;
     const btn = document.createElement('button');
     btn.id = 'brutal-scan-btn';
-    btn.textContent = '🔍 Scan Me';
+    btn.textContent = 'Analyze Profile';
     btn.onclick = () => { mountSidebar(); showSidebar(); };
     bar.prepend(btn);
   }
@@ -44,20 +44,20 @@
     root.id = 'brutal-recruiter-sidebar';
     root.innerHTML = `
       <div class="br-header">
-        <span class="br-title">🔥 Profile Review</span>
+        <span class="br-title">Profile Analysis</span>
         <button class="br-close-btn" aria-label="Close">×</button>
       </div>
       <div class="br-toggle-container">
-        <button class="br-toggle-btn active" data-tab="review">📋 Review</button>
-        <button class="br-toggle-btn" data-tab="jobfit">💼 Job Fit</button>
+        <button class="br-toggle-btn active" data-tab="review">Review</button>
+        <button class="br-toggle-btn" data-tab="jobfit">Job Fit</button>
       </div>
       <div id="br-content-area" class="br-content">
         <div class="br-idle">
           <div class="br-scan-hero">
-            <div class="br-scan-icon">🔍</div>
-            <h3>Ready to Review</h3>
-            <p>Get a full AI-powered breakdown of your LinkedIn profile with clear, actionable steps to improve every section.</p>
-            <button class="br-scan-btn-main" id="main-analyze-trigger">Scan My Profile</button>
+            <div class="br-scan-icon">📊</div> 
+            <h3>Ready to Analyze</h3>
+            <p>Get a comprehensive AI-powered breakdown of your LinkedIn profile with clear, data-driven actionable steps.</p>
+            <button class="br-scan-btn-main" id="main-analyze-trigger">Start Analysis</button>
           </div>
         </div>
       </div>`;
@@ -183,13 +183,13 @@
     setContent(`
       <div class="br-loading">
         <div class="br-spinner"></div>
-        <p><strong>Consulting all 3 AIs simultaneously…</strong></p>
+        <p><strong>Analyzing profile data...</strong></p>
         <div style="display:flex;justify-content:center;gap:6px;margin-top:10px;flex-wrap:wrap;">
-          <span class="br-ai-chip chip-g">🔵 Gemini</span>
-          <span class="br-ai-chip chip-o">🟢 GPT-4o</span>
-          <span class="br-ai-chip chip-c">🟣 Claude 3.5</span>
+          <span class="br-ai-chip chip-g">Gemini</span>
+          <span class="br-ai-chip chip-o">GPT-4o</span>
+          <span class="br-ai-chip chip-c">Claude 3.5</span>
         </div>
-        <p style="margin-top:12px;"><small>Scanning every section of your profile.<br>Takes ~20–30 seconds.</small></p>
+        <p style="margin-top:12px;"><small>Processing all sections.<br>Estimated time: 20–30 seconds.</small></p>
       </div>`);
 
     let profileData;
@@ -266,10 +266,10 @@
       setContent(`
         <div class="br-idle">
           <div class="br-scan-hero">
-            <div class="br-scan-icon">🔍</div>
-            <h3>Ready to Review</h3>
-            <p>Get a full AI-powered breakdown of your LinkedIn profile with clear, actionable steps to improve every section.</p>
-            <button class="br-scan-btn-main" id="main-analyze-trigger">Scan My Profile</button>
+            <div class="br-scan-icon">📊</div>
+            <h3>Ready to Analyze</h3>
+            <p>Get a comprehensive AI-powered breakdown of your LinkedIn profile with clear, data-driven actionable steps.</p>
+            <button class="br-scan-btn-main" id="main-analyze-trigger">Start Analysis</button>
           </div>
         </div>`);
       return;
@@ -279,14 +279,14 @@
     const s = STATE.lastData.suggestions;
     const ss = STATE.lastData.sectionScores || {};
     const meta = STATE.scrapedMeta || {};
-    const sc = r.brutalityScore;
+    const sc = r.brutalityScore; // We'll keep the internal variable name but display as "Profile Impact Score"
     const scColor = sc >= 70 ? '#059669' : sc >= 40 ? '#d97706' : '#dc2626';
     const scBg = sc >= 70 ? '#dcfce7' : sc >= 40 ? '#fef3c7' : '#fee2e2';
 
     // Provider badge (triple mode)
     const providerBadge = (STATE.lastData._providers?.length) ?
       `<div class="br-powered-by">
-        <span class="br-powered-label">POWERED BY</span>
+        <span class="br-powered-label">ANALYZED BY</span>
         ${(STATE.lastData._providers || []).map(p => {
         const styles = { 'Gemini': 'chip-g', 'GPT-4o': 'chip-o', 'Claude 3.5': 'chip-c' };
         return `<span class="br-ai-chip ${styles[p] || ''}">${esc(p)}</span>`;
@@ -296,19 +296,19 @@
     // Recruiter first look
     const recruiterBlock = r.recruiterView ? `
       <div class="br-recruiter-card">
-        <div class="br-rec-label">👔 Recruiter's First Look</div>
+        <div class="br-rec-label">Recruiter Impression</div>
         <p class="br-rec-text">${esc(r.recruiterView)}</p>
       </div>` : '';
 
     // Section improvement cards
     const sectionDefs = [
-      { key: 'headline', label: '📝 Headline', icon: '📝' },
-      { key: 'about', label: '👤 About / Summary', icon: '👤' },
-      { key: 'experience', label: '💼 Experience', icon: '💼' },
-      { key: 'skills', label: '🛠 Skills', icon: '🛠' },
-      { key: 'recommendations', label: '⭐ Recommendations', icon: '⭐' },
-      { key: 'featured', label: '📌 Featured', icon: '📌' },
-      { key: 'url', label: '🔗 Profile URL', icon: '🔗' }
+      { key: 'headline', label: 'Headline Strategy' },
+      { key: 'about', label: 'Summary / About' },
+      { key: 'experience', label: 'Experience Depth' },
+      { key: 'skills', label: 'Skills Relevance' },
+      { key: 'recommendations', label: 'Social Proof' },
+      { key: 'featured', label: 'Featured Content' },
+      { key: 'url', label: 'Profile URL' }
     ];
 
     // Match section scores to action plan items where possible
@@ -332,20 +332,20 @@
       const pct = val * 10;
       const statusColor = pct >= 70 ? '#059669' : pct >= 40 ? '#d97706' : '#dc2626';
       const statusBg = pct >= 70 ? '#f0fdf4' : pct >= 40 ? '#fffbeb' : '#fff1f2';
-      const status = pct >= 70 ? 'Good' : pct >= 40 ? 'Needs Work' : 'Critical';
+      const status = pct >= 70 ? 'Strong' : pct >= 40 ? 'Needs Improvement' : 'Critical Issue';
       const action = actionBySection[key];
 
       let fixContent = '';
       if (key === 'headline' && headlineSuggestion) {
-        fixContent = `<div class="br-fix-row"><span class="br-fix-label">✍ Try instead:</span><div class="br-fix-suggestion">${esc(headlineSuggestion.text)}</div></div>`;
+        fixContent = `<div class="br-fix-row"><span class="br-fix-label">Recommended:</span><div class="br-fix-suggestion">${esc(headlineSuggestion.text)}</div></div>`;
       }
       if (key === 'url' && s.urlFix && s.urlFix !== 'null') {
-        fixContent = `<div class="br-fix-row"><span class="br-fix-label">✍ Suggested:</span><code class="br-fix-url">linkedin.com/in/${esc(s.urlFix)}</code></div>`;
+        fixContent = `<div class="br-fix-row"><span class="br-fix-label">Suggested URL:</span><code class="br-fix-url">linkedin.com/in/${esc(s.urlFix)}</code></div>`;
       }
       if (action) {
         fixContent += `
-          ${action.why ? `<div class="br-fix-row"><span class="br-fix-label">📌 Why:</span><span class="br-fix-detail">${esc(action.why)}</span></div>` : ''}
-          ${action.how ? `<div class="br-fix-row"><span class="br-fix-label">⚡ How:</span><span class="br-fix-detail">${esc(action.how)}</span></div>` : ''}`;
+          ${action.why ? `<div class="br-fix-row"><span class="br-fix-label">Why:</span><span class="br-fix-detail">${esc(action.why)}</span></div>` : ''}
+          ${action.how ? `<div class="br-fix-row"><span class="br-fix-label">Action:</span><span class="br-fix-detail">${esc(action.how)}</span></div>` : ''}`;
       }
 
       return `
@@ -367,8 +367,8 @@
     const conns = parseInt(meta.connectionsCount) || 0;
     const checks = [
       { label: 'Profile Photo', pass: !!meta.hasProfilePicture },
-      { label: 'Banner / Cover', pass: !!meta.hasBanner },
-      { label: 'Custom Vanity URL', pass: isVanity },
+      { label: 'Banner Image', pass: !!meta.hasBanner },
+      { label: 'Vanity URL', pass: isVanity },
       { label: 'Featured Section', pass: !!meta.hasFeatured },
       { label: '500+ Connections', pass: conns >= 500 },
       { label: 'Recent Activity', pass: !!meta.hasActivity },
@@ -376,18 +376,18 @@
     ];
     const checklistHTML = checks.map(c =>
       `<div class="br-check-item ${c.pass ? 'pass' : 'fail'}">
-        <span class="br-check-icon">${c.pass ? '✅' : '❌'}</span>
+        <span class="br-check-icon">${c.pass ? '✓' : '⚠'}</span>
         <span>${esc(c.label)}</span>
       </div>`).join('');
 
     // Bullet rewrites
     const rewritesHTML = (s.impactStatements || []).slice(0, 3).map(item => `
       <div class="br-rewrite-card">
-        <div class="br-rw-before">❌ ${esc((item.original || '').substring(0, 120))}</div>
-        <div class="br-rw-after">✅ ${esc(item.improved || '')}</div>
+        <div class="br-rw-before">Original: ${esc((item.original || '').substring(0, 120))}</div>
+        <div class="br-rw-after">Improved: ${esc(item.improved || '')}</div>
       </div>`).join('');
 
-    // Viral hooks
+    // Viral hooks -> Strategic Hooks
     const hooksHTML = (s.growthHacks?.viralHooks || []).slice(0, 3).map(h =>
       `<div class="br-hook-card" onclick="navigator.clipboard.writeText(${JSON.stringify(h)})" title="Click to copy">
         "${esc(h)}"<span class="br-copy-hint">copy</span>
@@ -404,7 +404,7 @@
     const history = getHistory();
     const historyHTML = history.length > 1 ? `
       <div class="br-card-section">
-        <div class="br-card-section-title">📈 Progress History</div>
+        <div class="br-card-section-title">History Trend</div>
         <table class="br-history-table">
           <thead><tr><th>Date</th><th>Score</th><th>Complete</th><th>Algo</th></tr></thead>
           <tbody>${history.slice().reverse().map(h => {
@@ -426,23 +426,23 @@
       <div class="br-score-row">
         <div class="br-big-score" style="background:${scBg};color:${scColor};">
           <div class="br-big-num">${sc}</div>
-          <div class="br-big-label">Profile Score</div>
+          <div class="br-big-label">Impact Score</div>
         </div>
         <div class="br-mini-scores">
           <div class="br-mini-score-item">
             <div class="br-mini-val" style="color:${r.algorithmScore >= 70 ? '#059669' : r.algorithmScore >= 40 ? '#d97706' : '#dc2626'};">${r.algorithmScore ?? '—'}</div>
-            <div class="br-mini-lbl">Algorithm</div>
+            <div class="br-mini-lbl">SEO</div>
           </div>
           <div class="br-mini-score-item">
             <div class="br-mini-val" style="color:${(r.completenessScore ?? 0) >= 70 ? '#059669' : (r.completenessScore ?? 0) >= 40 ? '#d97706' : '#dc2626'};">${r.completenessScore ?? '—'}%</div>
-            <div class="br-mini-lbl">Complete</div>
+            <div class="br-mini-lbl">Completeness</div>
           </div>
         </div>
       </div>
 
       <!-- Verdict -->
       <div class="br-verdict-card">
-        <div class="br-verdict-label">AI Verdict</div>
+        <div class="br-verdict-label">Executive Summary</div>
         <p class="br-verdict-text">${esc(r.summary)}</p>
       </div>
 
@@ -450,47 +450,47 @@
 
       ${r.industryBenchmark ? `
       <div class="br-benchmark-card">
-        <div class="br-benchmark-label">📊 vs. Top ${esc(meta.industry || 'Industry')} Profiles</div>
+        <div class="br-benchmark-label">Market Comparison (vs. Top ${esc(meta.industry || 'Industry')} Profiles)</div>
         <p class="br-benchmark-text">${esc(r.industryBenchmark)}</p>
       </div>` : ''}
 
       <!-- Section-by-section improvement cards -->
       <div class="br-card-section">
-        <div class="br-card-section-title">🗂 Section-by-Section Review</div>
+        <div class="br-card-section-title">Detailed Analysis by Section</div>
         ${sectionCards}
       </div>
 
       <!-- Profile Checklist -->
       <div class="br-card-section">
-        <div class="br-card-section-title">✅ Quick Checklist</div>
+        <div class="br-card-section-title">Essential Checklist</div>
         <div class="br-checklist-grid">${checklistHTML}</div>
       </div>
 
       <!-- Bullet rewrites -->
       ${rewritesHTML ? `
       <div class="br-card-section">
-        <div class="br-card-section-title">✍ Bullet Point Rewrites</div>
+        <div class="br-card-section-title">Impact Statement Rewrites</div>
         ${rewritesHTML}
       </div>` : ''}
 
       <!-- Viral hooks -->
       ${hooksHTML ? `
       <div class="br-card-section">
-        <div class="br-card-section-title">🔥 Post Hook Ideas (click to copy)</div>
+        <div class="br-card-section-title">Strategic Content Hooks</div>
         ${hooksHTML}
       </div>` : ''}
 
       <!-- Networking scripts -->
       ${scriptsHTML ? `
       <div class="br-card-section">
-        <div class="br-card-section-title">💬 Networking DM Scripts</div>
+        <div class="br-card-section-title">Outreach Templates</div>
         ${scriptsHTML}
       </div>` : ''}
 
       ${historyHTML}
 
       <div style="text-align:center;margin-top:1rem;padding-top:1rem;border-top:1px solid #f3f4f6;">
-        <button class="br-rescan-btn" id="main-analyze-trigger">🔄 Rescan Profile</button>
+        <button class="br-rescan-btn" id="main-analyze-trigger">Refresh Analysis</button>
       </div>
     `);
   }
@@ -524,9 +524,9 @@
     const fitLabel = ['', 'Poor Fit', 'Weak Fit', 'Average Fit', 'Good Fit', 'Excellent Fit'][fit];
 
     const matchedHTML = (data.matched || []).map(k =>
-      `<span class="br-kw-tag br-kw-match">✓ ${esc(k)}</span>`).join('');
+      `<span class="br-kw-tag br-kw-match">${esc(k)}</span>`).join('');
     const missingHTML = (data.missing || []).map(k =>
-      `<span class="br-kw-tag br-kw-miss">✗ ${esc(k)}</span>`).join('');
+      `<span class="br-kw-tag br-kw-miss">${esc(k)}</span>`).join('');
 
     const recsHTML = (data.recommendations || []).map((r, i) =>
       `<div class="br-jf-rec"><span class="br-jf-rec-num">${i + 1}</span><span>${esc(r)}</span></div>`).join('');
@@ -551,13 +551,13 @@
 
       ${matchedHTML ? `
       <div class="br-card-section">
-        <div class="br-card-section-title">✅ Keywords You Have (${(data.matched || []).length})</div>
+        <div class="br-card-section-title">Matches (${(data.matched || []).length})</div>
         <div class="br-kw-grid">${matchedHTML}</div>
       </div>` : ''}
 
       ${missingHTML ? `
       <div class="br-card-section">
-        <div class="br-card-section-title">❌ Keywords You're Missing (${(data.missing || []).length})</div>
+        <div class="br-card-section-title">Missing Keywords (${(data.missing || []).length})</div>
         <div class="br-kw-grid">${missingHTML}</div>
       </div>` : ''}
 
