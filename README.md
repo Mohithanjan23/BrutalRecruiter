@@ -105,10 +105,11 @@ Click the extension icon → Settings. Add keys for at least one provider (Gemin
 
 **Option B — Use `env.js` (Developer Mode)**
 
-If you prefer configuration over clicking:
+If you prefer configuration over clicking, the extension will **automatically** look for keys in `env.js` if they aren't set in the popup.
+
 1. Rename `env.example.js` to `env.js`.
 2. Paste your keys inside `env.js`.
-3. Reload the extension.
+3. That's it! The extension will load them on your next analysis.
 4. Note: `env.js` is gitignored by default for security.
 
 **Step 4 — Analyze**
