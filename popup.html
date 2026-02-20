@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brutal Recruiter</title>
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      width: 340px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 14px;
+      background: #0f172a;
+      color: #f1f5f9;
+    }
+
+    .popup-header {
+      padding: 16px 18px 12px;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    .popup-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.01em;
+    }
+
+    .popup-subtitle {
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 2px;
+    }
+
+    .popup-body {
+      padding: 14px 18px;
+    }
+
+    /* ── Triple badge ── */
+    .triple-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      background: linear-gradient(135deg, #1e3a5f 0%, #14291a 50%, #2d1b4e 100%);
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 8px 10px;
+      margin-bottom: 10px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .triple-badge .ai-chip {
+      padding: 2px 8px;
+      border-radius: 99px;
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .chip-gemini {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+
+    .chip-openai {
+      background: #dcfce7;
+      color: #16a34a;
+    }
+
+    .chip-claude {
+      background: #f3e8ff;
+      color: #9333ea;
+    }
+
+    /* ── Provider toggle ── */
+    .provider-label {
+      font-size: 10px;
+      color: #475569;
+      text-align: center;
+      margin-bottom: 6px;
+      letter-spacing: 0.04em;
+    }
+
+    .provider-toggle {
+      display: flex;
+      background: #1e293b;
+      border-radius: 8px;
+      padding: 3px;
+      gap: 3px;
+      margin-bottom: 12px;
+    }
+
+    .provider-btn {
+      flex: 1;
+      padding: 6px 2px;
+      border: none;
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      background: transparent;
+      color: #64748b;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+
+    .provider-btn.active {
+      color: #fff;
+    }
+
+    .provider-btn[data-provider="triple"].active {
+      background: #7c3aed;
+    }
+
+    .provider-btn[data-provider="gemini"].active {
+      background: #1d4ed8;
+    }
+
+    .provider-btn[data-provider="openai"].active {
+      background: #16a34a;
+    }
+
+    .provider-btn[data-provider="claude"].active {
+      background: #9333ea;
+    }
+
+    .provider-btn:not(.active):hover {
+      color: #94a3b8;
+    }
+
+    /* ── Scan button ── */
+    #scanBtn {
+      width: 100%;
+      padding: 11px;
+      background: #e11d48;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    #scanBtn:hover {
+      background: #be123c;
+    }
+
+    .status {
+      margin-top: 8px;
+      font-size: 12px;
+      min-height: 18px;
+      color: #64748b;
+      text-align: center;
+    }
+
+    .status.error {
+      color: #f87171;
+    }
+
+    .status.success {
+      color: #4ade80;
+    }
+
+    details {
+      border-top: 1px solid #1e293b;
+      padding: 10px 18px 14px;
+    }
+
+    summary {
+      font-size: 12px;
+      color: #64748b;
+      cursor: pointer;
+      list-style: none;
+      user-select: none;
+    }
+
+    summary:hover {
+      color: #94a3b8;
+    }
+
+    .settings-inner {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .settings-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    label {
+      font-size: 11px;
+      color: #94a3b8;
+      display: block;
+    }
+
+    input[type="password"] {
+      width: 100%;
+      padding: 8px 10px;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      color: #f1f5f9;
+      font-size: 13px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #e11d48;
+    }
+
+    input::placeholder {
+      color: #475569;
+    }
+
+    #saveBtn {
+      width: 100%;
+      padding: 8px;
+      background: #1e293b;
+      color: #e2e8f0;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    #saveBtn:hover {
+      background: #334155;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid #1e293b;
+      margin: 6px 0;
+    }
+
+    .key-links {
+      font-size: 10px;
+      color: #475569;
+      line-height: 1.7;
+    }
+
+    .key-links a {
+      color: #64748b;
+      text-decoration: none;
+    }
+
+    .key-links a:hover {
+      color: #94a3b8;
+    }
+
+    .popup-footer {
+      padding: 8px 18px;
+      border-top: 1px solid #1e293b;
+      font-size: 11px;
+      color: #475569;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="popup-header">
+    <div class="popup-title">🔥 Brutal Recruiter</div>
+    <div class="popup-subtitle">AI-powered LinkedIn analyzer</div>
+  </div>
+
+  <div class="popup-body">
+
+    <!-- Triple AI feature banner -->
+    <div class="triple-badge">
+      <span class="ai-chip chip-gemini">🔵 Gemini</span>
+      <span style="color:#475569;font-size:9px;">+</span>
+      <span class="ai-chip chip-openai">🟢 GPT-4o</span>
+      <span style="color:#475569;font-size:9px;">+</span>
+      <span class="ai-chip chip-claude">🟣 Claude 3.5</span>
+    </div>
+
+    <!-- Provider mode selector -->
+    <div class="provider-label">AI MODE — choose or use all 3</div>
+    <div class="provider-toggle">
+      <button class="provider-btn active" data-provider="triple">⚡ All 3</button>
+      <button class="provider-btn" data-provider="gemini">Gemini</button>
+      <button class="provider-btn" data-provider="openai">GPT-4o</button>
+      <button class="provider-btn" data-provider="claude">Claude</button>
+    </div>
+
+    <button id="scanBtn">Scan Current Profile</button>
+    <div id="status" class="status">Navigate to a LinkedIn profile, then click above.</div>
+  </div>
+
+  <details>
+    <summary>⚙️ Settings — API Keys</summary>
+    <div class="settings-inner">
+
+      <div class="settings-group">
+        <label for="geminiKey">Gemini API Key</label>
+        <input type="password" id="geminiKey" placeholder="AIzaSy…">
+      </div>
+
+      <div class="settings-group">
+        <label for="openaiKey">OpenAI API Key</label>
+        <input type="password" id="openaiKey" placeholder="sk-proj-…">
+      </div>
+
+      <div class="settings-group">
+        <label for="claudeKey">Anthropic API Key</label>
+        <input type="password" id="claudeKey" placeholder="sk-ant-api03-…">
+      </div>
+
+      <button id="saveBtn">Save All Keys</button>
+      <div id="save-status" class="status"></div>
+
+      <hr class="divider">
+      <div class="key-links">
+        Gemini: <a href="https://aistudio.google.com/" target="_blank">aistudio.google.com</a><br>
+        OpenAI: <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com</a><br>
+        Claude: <a href="https://console.anthropic.com/settings/keys" target="_blank">console.anthropic.com</a>
+      </div>
+    </div>
+  </details>
+
+  <div class="popup-footer">v1.3 · Triple-AI Consensus Mode</div>
+
+  <script src="popup.js"></script>
+</body>
+
+</html>
