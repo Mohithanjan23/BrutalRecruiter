@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="https://raw.githubusercontent.com/Mohithanjan23/BrutalRecruiter/main/images/icon128.png" alt="BrutalRecruiter Logo" width="96" />
+
 # BrutalRecruiter
 
 **AI-powered LinkedIn profile reviewer. Three models. One verdict. Zero fluff.**
