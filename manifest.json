@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "BrutalRecruiter: Roast & Refine",
-  "version": "1.3",
-  "description": "An AI-powered recruiter that roasts your LinkedIn profile and provides brutal, actionable feedback.",
+  "name": "Profile Analyzer: Professional Strategy",
+  "version": "2.0",
+  "description": "An AI-powered strategist that analyzes your LinkedIn profile and provides actionable, data-driven feedback.",
   "permissions": [
     "activeTab",
     "tabs",

@@ -39,10 +39,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (saveNow) {
             chrome.storage.local.set({ aiProvider: provider });
             const labels = {
-                triple: '⚡ All 3 AIs ✓',
-                gemini: 'Gemini ✓',
-                openai: 'GPT-4o ✓',
-                claude: 'Claude 3.5 ✓'
+                triple: 'All 3 AIs (Active)',
+                gemini: 'Gemini (Active)',
+                openai: 'GPT-4o (Active)',
+                claude: 'Claude 3.5 (Active)'
             };
             setStatus(saveStatusEl, `Mode: ${labels[provider]}`, 'success');
             setTimeout(() => setStatus(saveStatusEl, '', ''), 2500);

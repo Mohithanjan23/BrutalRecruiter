@@ -426,7 +426,7 @@ async function callOpenAIAPI(apiKey, prompt) {
       lastErr = err; break;
     }
   }
-  if (lastErr?.message === 'RATE_LIMITED') throw new Error('OpenAI rate limit — wait 30–60s and retry.');
+  if (lastErr?.message === 'RATE_LIMITED') throw new Error('OpenAI rate limited. Check your credit balance or wait 60s.');
   throw lastErr || new Error('OpenAI call failed.');
 }
 
@@ -445,7 +445,8 @@ async function callClaudeAPI(apiKey, prompt) {
         headers: {
           'Content-Type': 'application/json',
           'x-api-key': apiKey,
-          'anthropic-version': '2023-06-01'
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
         },
         body: JSON.stringify({
           model: CLAUDE_MODEL,
@@ -469,7 +470,7 @@ async function callClaudeAPI(apiKey, prompt) {
       lastErr = err; break;
     }
   }
-  if (lastErr?.message === 'RATE_LIMITED') throw new Error('Claude rate limit — wait 30–60s and retry.');
+  if (lastErr?.message === 'RATE_LIMITED') throw new Error('Claude rate limited. Wait 60s or check billing.');
   throw lastErr || new Error('Claude call failed.');
 }
 
@@ -510,7 +511,7 @@ async function callGeminiAPI(apiKey, prompt) {
     }
     if (lastErr?.message === 'RATE_LIMITED') await sleep(3000);
   }
-  if (lastErr?.message === 'RATE_LIMITED') throw new Error('Gemini rate limit — wait 30–60s and retry.');
+  if (lastErr?.message === 'RATE_LIMITED') throw new Error('Gemini rate limited. Free tier quota exceeded? Wait 60s.');
   throw lastErr || new Error('All Gemini models failed.');
 }
 

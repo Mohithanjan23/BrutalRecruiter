@@ -54,7 +54,7 @@
       <div id="br-content-area" class="br-content">
         <div class="br-idle">
           <div class="br-scan-hero">
-            <div class="br-scan-icon">📊</div> 
+            <div class="br-scan-icon"></div> 
             <h3>Ready to Analyze</h3>
             <p>Get a comprehensive AI-powered breakdown of your LinkedIn profile with clear, data-driven actionable steps.</p>
             <button class="br-scan-btn-main" id="main-analyze-trigger">Start Analysis</button>
@@ -266,7 +266,7 @@
       setContent(`
         <div class="br-idle">
           <div class="br-scan-hero">
-            <div class="br-scan-icon">📊</div>
+            <div class="br-scan-icon"></div>
             <h3>Ready to Analyze</h3>
             <p>Get a comprehensive AI-powered breakdown of your LinkedIn profile with clear, data-driven actionable steps.</p>
             <button class="br-scan-btn-main" id="main-analyze-trigger">Start Analysis</button>
@@ -376,7 +376,7 @@
     ];
     const checklistHTML = checks.map(c =>
       `<div class="br-check-item ${c.pass ? 'pass' : 'fail'}">
-        <span class="br-check-icon">${c.pass ? '✓' : '⚠'}</span>
+        <span class="br-check-icon">${c.pass ? '✓' : '!'}</span>
         <span>${esc(c.label)}</span>
       </div>`).join('');
 
@@ -563,7 +563,7 @@
 
       ${recsHTML ? `
       <div class="br-card-section">
-        <div class="br-card-section-title">📋 How to Improve Your Fit</div>
+        <div class="br-card-section-title">How to Improve Your Fit</div>
         ${recsHTML}
       </div>` : ''}
     `;
